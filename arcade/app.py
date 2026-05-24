@@ -1,4 +1,5 @@
 import os
+import re
 import psycopg2
 import psycopg2.extras
 from flask import Flask, g, render_template, request, jsonify, redirect, url_for
@@ -7,6 +8,38 @@ from dotenv import load_dotenv
 load_dotenv()
  
 app = Flask(__name__)
+
+RE_NICKNAME = re.compile(r'^[A-Z]{1,10}$')
+
+RE_GAME_SLUG    = re.compile(r'^(fibonacci|alphabet|gates)$')
+ 
+RE_SORT_PARAM   = re.compile(r'^(score|time)$')
+
+RE_POS_INT      = re.compile(r'^\d+$')
+
+RE_TIME_TAKEN   = re.compile(r'^\d+(\.\d+)?$')
+ 
+ 
+def validate_nickname(value):
+    """Return the cleaned nickname or raise ValueError."""
+    cleaned = str(value).strip().upper()
+    if not RE_NICKNAME.match(cleaned):
+        raise ValueError(f"Tag must be 1-10 capital letters, got: {value!r}")
+    return cleaned
+ 
+ 
+def validate_pos_int(value, name):
+    """Return value as int if it looks like a non-negative integer."""
+    if not RE_POS_INT.match(str(value)):
+        raise ValueError(f"{name} must be a non-negative integer, got: {value!r}")
+    return int(value)
+ 
+ 
+def validate_time(value):
+    """Return value as float if it looks like a valid elapsed time."""
+    if not RE_TIME_TAKEN.match(str(value)):
+        raise ValueError(f"time_taken must be a positive number, got: {value!r}")
+    return float(value)
  
 # ── Database config ───────────────────────────────────────────────────────────
  
@@ -69,11 +102,14 @@ def scoreboard(game):
     """
     Show the scoreboard for a given game.
     Accepts ?sort=score (default) or ?sort=time.
-    The sort direction (ASC/DESC) is read from the game table so each game
-    can define what 'best' means without touching this route.
     """
+    if not RE_GAME_SLUG.match(game):
+        return "Game not found", 404
+    
     sort = request.args.get("sort", "score")
- 
+    if not RE_SORT_PARAM.match(sort):
+        sort = "score"
+
     cur = get_cursor()
  
     # Fetch the game row so we know the sort direction
@@ -128,8 +164,6 @@ def scoreboard(game):
         """
     }
  
-    if game not in queries:
-        return "Game not found", 404
  
     cur.execute(queries[game], (game_id,))
     rows = cur.fetchall()
@@ -150,6 +184,8 @@ def scoreboard(game):
 def submit_score():
     """
     Receives JSON from the browser when a game ends.
+    All fields are validated with regex before touching the database.
+
     Expected payload for all games:
         { game, game_id, nickname, time_taken, ...game-specific fields }
     """
@@ -157,48 +193,65 @@ def submit_score():
  
     if not data:
         return jsonify({"error": "No data received"}), 400
+
  
-    nickname = data.get("nickname", "AAA").upper()[:3]
+    try:
+        # Validate game slug — must be one of the three known games
+        game = data.get("game", "")
+        if not RE_GAME_SLUG.match(game):
+            return jsonify({"error": f"Unknown game: {game!r}"}), 400
  
+        # Validate nickname — 1–3 capital letters
+        nickname = validate_nickname(data.get("nickname", ""))
+ 
+        # Validate time_taken — must be a positive decimal number
+        time_taken = validate_time(data.get("time_taken", ""))
+ 
+        # Validate game-specific numeric fields
+        if game == "fibonacci":
+            fib_value = validate_pos_int(data.get("fib_value_reached", ""), "fib_value_reached")
+ 
+        elif game == "alphabet":
+            nr_errors = validate_pos_int(data.get("nr_of_errors", ""), "nr_of_errors")
+ 
+        elif game == "gates":
+            nr_gates   = validate_pos_int(data.get("nr_of_gates_passed", ""),  "nr_of_gates_passed")
+            gate_value = validate_pos_int(data.get("gate_value_reached", ""), "gate_value_reached")
+ 
+    except ValueError as e:
+        # Any regex validation failure returns a 400 with a clear message
+        return jsonify({"error": str(e)}), 400
+ 
+    # All inputs are clean — write to the database
     db  = get_db()
     cur = get_cursor()
  
     try:
-        # Insert the base score row and get back its ID
         cur.execute(
             """
             INSERT INTO score (game_id, nickname, time_taken)
             VALUES (%s, %s, %s)
             RETURNING score_id
             """,
-            (data["game_id"], nickname, data["time_taken"])
+            (data["game_id"], nickname, time_taken)
         )
         score_id = cur.fetchone()["score_id"]
- 
-        # Insert into the correct subtype table
-        game = data.get("game")
  
         if game == "fibonacci":
             cur.execute(
                 "INSERT INTO fib_score (score_id, fib_value_reached) VALUES (%s, %s)",
-                (score_id, data["fib_value_reached"])
+                (score_id, fib_value)
             )
- 
         elif game == "alphabet":
             cur.execute(
                 "INSERT INTO alphabet_score (score_id, nr_of_errors) VALUES (%s, %s)",
-                (score_id, data["nr_of_errors"])
+                (score_id, nr_errors)
             )
- 
         elif game == "gates":
             cur.execute(
                 "INSERT INTO gates_score (score_id, nr_of_gates_passed, gate_value_reached) VALUES (%s, %s, %s)",
-                (score_id, data["nr_of_gates_passed"], data["gate_value_reached"])
+                (score_id, nr_gates, gate_value)
             )
- 
-        else:
-            db.rollback()
-            return jsonify({"error": f"Unknown game: {game}"}), 400
  
         db.commit()
         cur.close()

@@ -3,5 +3,81 @@
 {% block title %}Fibonacci — Arcade{% endblock %}
 
 {% block content %}
-<!-- your page content here -->
+<div class="game-wrapper">
+
+    <!-- IDLE screen -->
+    <div id="screen-idle" class="screen active">
+        <h1 class="game-title">FIBONACCI</h1>
+        <p class="game-description">
+            Type the next number in the fibonacci sequence.<br>
+            The game ends if you get one wrong!
+        </p>
+        <button class="btn-primary" onclick="game.start()">START GAME</button>
+        <a href="{{ url_for('scoreboard', game='fibonacci') }}" class="btn-secondary">Scoreboard</a>
+    </div>
+
+    <!-- PLAYING screen -->
+    <div id="screen-playing" class="screen">
+        <div class="hud">
+            <div class="hud-item">
+                <span class="hud-label">PROGRESS</span>
+                <span class="hud-value" id="display-progress">0 / 30</span>
+            </div>
+            <div class="hud-item">
+                <span class="hud-label">TIME</span>
+                <span class="hud-value" id="display-time">0.0s</span>
+            </div>
+        </div>
+        <div class="hud-item center">
+            <span class="hud-label">ENTER NEXT NUMBER</span>
+            <span class="hud-value big" id="display-number">0 0</span>
+        </div>
+
+        <input 
+            type="text" 
+            id="fib-input" 
+            placeholder="Enter next number"
+            autocomplete="off"
+            onkeydown="if(event.key === 'Enter') game.submit(this.value)">
+
+        <button onclick="game.submit(document.getElementById('fib-input').value)">
+            CHECK
+        </button>
+
+        <div id="feedback" class="feedback"></div>
+        
+    </div>
+
+    <!-- GAME OVER / results screen -->
+    <div id="screen-gameover" class="screen">
+        <h2 class="result-title">FINISHED!</h2>
+        <div class="result-stats">
+            <div class="stat">
+                <span class="stat-label">TIME</span>
+                <span class="stat-value" id="result-time">—</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">REACHED</span>
+                <span class="stat-value" id="result-value">—</span>
+            </div>
+        </div>
+
+        <div class="tag-entry">
+            <label for="nickname">ENTER YOUR TAG</label>
+            <input id="nickname" type="text" maxlength="10" placeholder="AAAAAAAAAA" autocomplete="off"
+                oninput="this.value = this.value.toUpperCase()">
+            <button class="btn-primary" onclick="game.saveScore()">SAVE SCORE</button>
+        </div>
+
+        <div id="save-status" class="save-status"></div>
+
+        <div class="post-game-btns">
+            <button class="btn-secondary" onclick="game.reset()">PLAY AGAIN</button>
+            <a href="{{ url_for('scoreboard', game='fibonacci') }}" class="btn-secondary">Scoreboard</a>
+        </div>
+    </div>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/fibonacci.js') }}"></script>
 {% endblock %}

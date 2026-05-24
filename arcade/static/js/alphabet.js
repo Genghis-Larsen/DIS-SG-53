@@ -5,6 +5,12 @@
 const GAME_ID = 2;                          // matches game table row for 'Alphabet'
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
+// ── Regular expression patterns ───────────────────────────────────────────────
+
+const RE_LETTER = /^[a-zA-Z]$/;
+
+const RE_NICKNAME = /^[A-Z]{1,10}$/;
+
 // ── State ─────────────────────────────────────────────────────────────────────
 
 const State = {
@@ -37,6 +43,8 @@ const game = {
     // Called by the keydown listener with every keypress while PLAYING
     handleKey(key) {
         if (this.state !== State.PLAYING) return;
+
+        if (!RE_LETTER.test(key)) return;
 
         const pressed = key.toUpperCase();
         const expected = ALPHABET[this.currentIdx];
@@ -72,10 +80,10 @@ const game = {
     // ── Score saving ─────────────────────────────────────────────────────────────
 
     async saveScore() {
-        const nickname = document.getElementById('nickname').value.trim().toUpperCase();
+        const raw = document.getElementById('nickname').value.trim().toUpperCase();
 
-        if (nickname.length === 0) {
-            setStatus('Please enter a 1–3 character tag.', 'error');
+        if (!RE_NICKNAME.test(raw)) {
+            setStatus('Tag must be 1-10 letters (A-Z only)', 'error');
             return;
         }
 

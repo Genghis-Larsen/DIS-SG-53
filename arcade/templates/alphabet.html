@@ -12,7 +12,7 @@
             Type the alphabet from A to Z as fast as you can.<br>
             Every wrong key counts as an error — but the game keeps going!
         </p>
-        <button class="btn-primary" onclick="game.start()">INSERT COIN</button>
+        <button class="btn-primary" onclick="game.start()">START GAME</button>
         <a href="{{ url_for('scoreboard', game='alphabet') }}" class="btn-secondary">Scoreboard</a>
     </div>
 
@@ -56,7 +56,7 @@
 
         <div class="tag-entry">
             <label for="nickname">ENTER YOUR TAG</label>
-            <input id="nickname" type="text" maxlength="3" placeholder="AAA" autocomplete="off"
+            <input id="nickname" type="text" maxlength="10" placeholder="AAAAAAAAAA" autocomplete="off"
                 oninput="this.value = this.value.toUpperCase()">
             <button class="btn-primary" onclick="game.saveScore()">SAVE SCORE</button>
         </div>
