@@ -80,9 +80,10 @@ const game = {
     // ── Score saving ─────────────────────────────────────────────────────────────
 
     async saveScore() {
-        const raw = document.getElementById('nickname').value.trim().toUpperCase();
+        const nickname = document.getElementById('nickname').value.trim().toUpperCase();
 
-        if (!RE_NICKNAME.test(raw)) {
+
+        if (!RE_NICKNAME.test(nickname)) {
             setStatus('Tag must be 1-10 letters (A-Z only)', 'error');
             return;
         }
@@ -209,8 +210,8 @@ function setStatus(msg, type) {
 document.addEventListener('keydown', (e) => {
     // Only care about single letter keys, ignore modifier combos
     if (e.key.length === 1 && e.key.match(/[a-zA-Z]/) && !e.ctrlKey && !e.metaKey) {
-        game.handleKey(e.key);
-    }
+        game.handleKey(e.key) };
+    
 });
 
 // ── Initial render ────────────────────────────────────────────────────────────

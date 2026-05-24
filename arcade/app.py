@@ -201,7 +201,7 @@ def submit_score():
         if not RE_GAME_SLUG.match(game):
             return jsonify({"error": f"Unknown game: {game!r}"}), 400
  
-        # Validate nickname — 1–3 capital letters
+        # Validate nickname — 1–10 capital letters
         nickname = validate_nickname(data.get("nickname", ""))
  
         # Validate time_taken — must be a positive decimal number
