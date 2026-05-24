@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Alphabet — Arcade{% endblock %}
+
+{% block content %}
+<div class="game-wrapper">
+
+    <!-- IDLE screen -->
+    <div id="screen-idle" class="screen active">
+        <h1 class="game-title">ALPHABET</h1>
+        <p class="game-description">
+            Type the alphabet from A to Z as fast as you can.<br>
+            Every wrong key counts as an error — but the game keeps going!
+        </p>
+        <button class="btn-primary" onclick="game.start()">INSERT COIN</button>
+        <a href="{{ url_for('scoreboard', game='alphabet') }}" class="btn-secondary">Scoreboard</a>
+    </div>
+
+    <!-- PLAYING screen -->
+    <div id="screen-playing" class="screen">
+        <div class="hud">
+            <div class="hud-item">
+                <span class="hud-label">ERRORS</span>
+                <span class="hud-value" id="display-errors">0</span>
+            </div>
+            <div class="hud-item center">
+                <span class="hud-label">NEXT</span>
+                <span class="hud-value big" id="display-letter">A</span>
+            </div>
+            <div class="hud-item">
+                <span class="hud-label">TIME</span>
+                <span class="hud-value" id="display-time">0.0s</span>
+            </div>
+        </div>
+
+        <div class="keyboard-hint" id="keyboard-hint">
+            <!-- filled in by JS to show all 26 letters, greying out completed ones -->
+        </div>
+
+        <div id="feedback" class="feedback"></div>
+    </div>
+
+    <!-- GAME OVER / results screen -->
+    <div id="screen-gameover" class="screen">
+        <h2 class="result-title">FINISHED!</h2>
+        <div class="result-stats">
+            <div class="stat">
+                <span class="stat-label">TIME</span>
+                <span class="stat-value" id="result-time">—</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">ERRORS</span>
+                <span class="stat-value" id="result-errors">—</span>
+            </div>
+        </div>
+
+        <div class="tag-entry">
+            <label for="nickname">ENTER YOUR TAG</label>
+            <input id="nickname" type="text" maxlength="3" placeholder="AAA" autocomplete="off"
+                oninput="this.value = this.value.toUpperCase()">
+            <button class="btn-primary" onclick="game.saveScore()">SAVE SCORE</button>
+        </div>
+
+        <div id="save-status" class="save-status"></div>
+
+        <div class="post-game-btns">
+            <button class="btn-secondary" onclick="game.reset()">PLAY AGAIN</button>
+            <a href="{{ url_for('scoreboard', game='alphabet') }}" class="btn-secondary">Scoreboard</a>
+        </div>
+    </div>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/alphabet.js') }}"></script>
+{% endblock %}

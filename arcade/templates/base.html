@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Arcade{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <nav>
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('scoreboard', game='fibonacci') }}">Fibonacci scores</a>
+        <a href="{{ url_for('scoreboard', game='alphabet') }}">Alphabet scores</a>
+        <a href="{{ url_for('scoreboard', game='gates') }}">Gates scores</a>
+    </nav>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+</body>
+
+</html>
