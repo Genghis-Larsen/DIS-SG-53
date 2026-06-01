@@ -1,28 +1,41 @@
--- Insert games
-INSERT INTO game (game_name, description, score_order)
+-- Demo/test data for the current arcade database schema.
+-- Run schema.sql first, then run this file if you want example scores.
+
+-- Fibonacci test scores
+INSERT INTO score (nickname, game_id, time_taken)
 VALUES
-    ('Reaction Time', 'Click as fast as possible when the signal appears.', 'ASC'),
-    ('Click Counter', 'Click as many times as possible within the time limit.', 'DESC'),
-    ('Guessing Game', 'Guess the number in as few attempts as possible.', 'ASC');
+    ('FELIX', (SELECT game_id FROM game WHERE game_name = 'Fibonacci'), 18.4),
+    ('MAJA',  (SELECT game_id FROM game WHERE game_name = 'Fibonacci'), 22.1),
+    ('TEST',  (SELECT game_id FROM game WHERE game_name = 'Fibonacci'), 15.7);
 
--- Insert test players
-INSERT INTO player (username)
+INSERT INTO fib_score (score_id, fib_value_reached)
 VALUES
-    ('Felix'),
-    ('Maja'),
-    ('TestPlayer');
+    (1, 377),
+    (2, 233),
+    (3, 610);
 
--- Insert test scores
-INSERT INTO score (player_id, game_id, score_value)
+-- Alphabet test scores
+INSERT INTO score (nickname, game_id, time_taken)
 VALUES
-    (1, 1, 320),
-    (2, 1, 280),
-    (3, 1, 410),
+    ('FELIX', (SELECT game_id FROM game WHERE game_name = 'Alphabet'), 9.8),
+    ('MAJA',  (SELECT game_id FROM game WHERE game_name = 'Alphabet'), 8.9),
+    ('TEST',  (SELECT game_id FROM game WHERE game_name = 'Alphabet'), 11.2);
 
-    (1, 2, 45),
-    (2, 2, 52),
-    (3, 2, 38),
+INSERT INTO alphabet_score (score_id, nr_of_errors)
+VALUES
+    (4, 2),
+    (5, 0),
+    (6, 1);
 
-    (1, 3, 6),
-    (2, 3, 4),
-    (3, 3, 8);
+-- Gates test scores
+INSERT INTO score (nickname, game_id, time_taken)
+VALUES
+    ('FELIX', (SELECT game_id FROM game WHERE game_name = 'Gates'), 30.5),
+    ('MAJA',  (SELECT game_id FROM game WHERE game_name = 'Gates'), 28.3),
+    ('TEST',  (SELECT game_id FROM game WHERE game_name = 'Gates'), 35.1);
+
+INSERT INTO gates_score (score_id, nr_of_gates_passed, gate_value_reached)
+VALUES
+    (7, 8, 128),
+    (8, 10, 256),
+    (9, 6, 64);
