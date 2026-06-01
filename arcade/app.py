@@ -13,7 +13,7 @@ RE_NICKNAME = re.compile(r'^[A-Z]{1,10}$')
 
 RE_GAME_SLUG    = re.compile(r'^(fibonacci|alphabet|gates)$')
  
-RE_SORT_PARAM   = re.compile(r'^(score|time)$')
+RE_SORT_PARAM   = re.compile(r'^(score|time|gates_passed|mistakes)$')
 
 RE_POS_INT      = re.compile(r'^\d+$')
 
@@ -159,10 +159,11 @@ def scoreboard(game):
             JOIN gates_score gs ON s.score_id = gs.score_id
             WHERE s.game_id = %s
             ORDER BY
-                {'main_score' if sort == 'score' else 's.time_taken'} {score_order if sort == 'score' else 'ASC'},
+                {'gs.nr_of_gates_passed' if sort == 'gates_passed' else 'main_score' if sort == 'score' else 's.time_taken'} 
+                {'DESC' if sort == 'gates_passed' else score_order if sort == 'score' else 'ASC'},
                 s.time_taken ASC
         """
-    }
+}
  
  
     cur.execute(queries[game], (game_id,))

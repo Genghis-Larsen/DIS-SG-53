@@ -3,5 +3,101 @@
 {% block title %}Gates — Arcade{% endblock %}
 
 {% block content %}
-<!-- your page content here -->
+<div class="game-wrapper">
+
+    <!-- IDLE screen -->
+    <div id="screen-idle" class="screen active">
+        <h1 class="game-title">GATES</h1>
+        <p class="game-description">
+            You start with 1 point. Pick the gate that gives you the highest score.<br>
+            First 2 rounds are positive gates, then 2 negative — then it repeats.<br>
+            Pick the wrong gate and it's game over!
+        </p>
+        <button class="btn-primary" onclick="game.start()">PLAY</button>
+        <a href="{{ url_for('scoreboard', game='gates') }}" class="btn-secondary">Scoreboard</a>
+    </div>
+
+    <!-- PLAYING screen -->
+    <div id="screen-playing" class="screen">
+
+        <!-- Top HUD row: gates passed | phase | time -->
+        <div class="hud">
+            <div class="hud-item">
+                <span class="hud-label">GATES</span>
+                <span class="hud-value" id="display-gates">0</span>
+            </div>
+            <div class="hud-item center">
+                <span class="hud-label">PHASE</span>
+                <span class="hud-value" id="display-phase">▲ POSITIVE</span>
+            </div>
+            <div class="hud-item">
+                <span class="hud-label">TIME</span>
+                <span class="hud-value" id="display-time">0.0s</span>
+            </div>
+        </div>
+
+        <!-- Gate arena: two gates side by side -->
+        <div class="gate-arena">
+
+            <!-- Left gate -->
+            <button id="gate-a" class="gate gate-positive" onclick="game.pick('a')">
+                <div class="gate-post gate-post-left"></div>
+                <div class="gate-label" id="gate-a-label"></div>
+                <div class="gate-post gate-post-right"></div>
+            </button>
+
+            <!-- Right gate -->
+            <button id="gate-b" class="gate gate-positive" onclick="game.pick('b')">
+                <div class="gate-post gate-post-left"></div>
+                <div class="gate-label" id="gate-b-label"></div>
+                <div class="gate-post gate-post-right"></div>
+            </button>
+
+        </div>
+
+        <!-- Score centered below the gates -->
+        <div class="gate-score-display">
+            <span class="gate-score-label">SCORE</span>
+            <span class="gate-score-value" id="display-score">1</span>
+        </div>
+
+        <div id="feedback" class="feedback"></div>
+    </div>
+
+    <!-- GAME OVER screen -->
+    <div id="screen-gameover" class="screen">
+        <h2 class="result-title">GAME OVER</h2>
+        <div class="result-stats">
+            <div class="stat">
+                <span class="stat-label">FINAL SCORE</span>
+                <span class="stat-value" id="result-score">—</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">GATES PASSED</span>
+                <span class="stat-value" id="result-gates">—</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">TIME</span>
+                <span class="stat-value" id="result-time">—</span>
+            </div>
+        </div>
+
+        <div class="tag-entry">
+            <label for="nickname">ENTER YOUR TAG</label>
+            <input id="nickname" type="text" maxlength="10" placeholder="AAAAAAAAAA" autocomplete="off"
+                oninput="this.value = this.value.toUpperCase()">
+            <button class="btn-primary" onclick="game.saveScore()">SAVE SCORE</button>
+        </div>
+
+        <div id="save-status" class="save-status"></div>
+
+        <div class="post-game-btns">
+            <button class="btn-secondary" onclick="game.reset()">PLAY AGAIN</button>
+            <a href="{{ url_for('scoreboard', game='gates') }}" class="btn-secondary">Scoreboard</a>
+        </div>
+    </div>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/gates.js') }}"></script>
 {% endblock %}

@@ -100,9 +100,6 @@ const game = {
 
             if (data.ok) {
                 setStatus('Score saved!', 'success');
-                setTimeout(() => {
-                    window.location.href = '/scoreboard/fibonacci';
-                }, 1200);
             } else {
                 setStatus('Error: ' + (data.error || 'unknown'), 'error');
             }

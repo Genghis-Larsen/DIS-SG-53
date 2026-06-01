@@ -1,19 +1,74 @@
 {% extends "base.html" %}
-{% block title %}Scoreboard{% endblock %}
+{% block title %}{{ game | capitalize }} Scoreboard{% endblock %}
+
 {% block content %}
-<h1>{{ game | capitalize }} Scoreboard</h1>
-<table>
-    <tr>
-        <th>Tag</th>
-        <th>Score</th>
-        <th>Time</th>
-    </tr>
-    {% for row in rows %}
-    <tr>
-        <td>{{ row.nickname }}</td>
-        <td>{{ row.main_score }}</td>
-        <td>{{ row.time_taken }}s</td>
-    </tr>
-    {% endfor %}
-</table>
+<div class="scoreboard">
+    <h1>{{ game | capitalize }} Scoreboard</h1>
+
+    <!-- Sort links -->
+    <div style="margin-bottom: 20px;">
+        {% if game == 'fibonacci' %}
+            <a href="{{ url_for('scoreboard', game=game, sort='score') }}">Sort by Score</a>
+            &nbsp;|&nbsp;
+            <a href="{{ url_for('scoreboard', game=game, sort='time') }}">Sort by Time</a>
+        {% elif game == 'gates' %}
+            <a href="{{ url_for('scoreboard', game=game, sort='gates_passed') }}">Sort by Gates</a>
+            &nbsp;|&nbsp;
+            <a href="{{ url_for('scoreboard', game=game, sort='score') }}">Sort by Score</a>
+            &nbsp;|&nbsp;
+            <a href="{{ url_for('scoreboard', game=game, sort='time') }}">Sort by Time</a>
+        {% elif game == 'alphabet' %}
+            <a href="{{ url_for('scoreboard', game=game, sort='mistakes') }}">Sort by Mistakes</a>
+            &nbsp;|&nbsp;
+            <a href="{{ url_for('scoreboard', game=game, sort='time') }}">Sort by Time</a>
+        {% endif %}
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>TAG</th>
+
+                {% if game == 'fibonacci' %}
+                <th>SCORE</th>
+                {% elif game == 'alphabet' %}
+                <th>MISTAKES</th>
+                {% elif game == 'gates' %}
+                <th>GATES PASSED</th>
+                <th>SCORE</th>
+                {% endif %}
+
+                <th>TIME</th>
+                <th>DATE</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in rows %}
+            <tr>
+                <td>{{ row.nickname }}</td>
+
+                {% if game == 'fibonacci' %}
+                <td>{{ row.main_score }}</td>
+                {% elif game == 'alphabet' %}
+                <td>{{ row.main_score }}</td>
+                {% elif game == 'gates' %}
+                <td>{{ row.nr_of_gates_passed }}</td>
+                <td>{{ row.main_score }}</td>
+                {% endif %}
+
+                <td>{{ "%.2f"|format(row.time_taken) }}s</td>
+                <td>{{ row.achieved_at.strftime('%d/%m/%Y') }}</td>
+            </tr>
+            {% endfor %}
+
+            {% if rows | length == 0 %}
+            <tr>
+                <td colspan="5" style="text-align:center; color:#64748b;">
+                    No scores yet — be the first!
+                </td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}

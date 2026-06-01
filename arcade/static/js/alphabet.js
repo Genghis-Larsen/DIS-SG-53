@@ -110,9 +110,6 @@ const game = {
             if (data.ok) {
                 setStatus('Score saved!', 'success');
                 // Redirect to scoreboard after a short delay
-                setTimeout(() => {
-                    window.location.href = '/scoreboard/alphabet';
-                }, 1200);
             } else {
                 setStatus('Error: ' + (data.error || 'unknown'), 'error');
             }
