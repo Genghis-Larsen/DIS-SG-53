@@ -20,7 +20,7 @@ DIS-SG-53/
 │   ├── app.py
 │   ├── schema.sql
 │   ├── seed.sql
-│   ├── .env
+│   ├── .env.example
 │   ├── templates/
 │   └── static/
 ├── requirements.txt
@@ -33,7 +33,7 @@ The database schema is in `arcade/schema.sql`.
 
 The optional test data is in `arcade/seed.sql`.
 
-The `arcade/.env` file is included as an example and must be edited by the user before running the app.
+The `arcade/.env.example` file is included as an example. The user must copy its contents into a new `arcade/.env` file and then insert their own PostgreSQL information.
 
 ## Database model
 
@@ -91,13 +91,21 @@ CREATE DATABASE arcade;
 
 ## Important `.env` setup
 
-The project includes an example `.env` file:
+The project includes an example environment file:
+
+```text
+arcade/.env.example
+```
+
+Do not edit `arcade/.env.example` directly. Instead, create a new file called:
 
 ```text
 arcade/.env
 ```
 
-Before running the app, the user has to edit this file with their own PostgreSQL information.
+Then copy the contents from `arcade/.env.example` into the new `arcade/.env` file.
+
+After that, edit `arcade/.env` with your own PostgreSQL information.
 
 Example:
 
@@ -110,6 +118,8 @@ DB_PORT=5432
 ```
 
 This is important because PostgreSQL usernames and passwords are different on different computers.
+
+If the app cannot connect to the database, `arcade/.env` is the first thing to check.
 
 ## Initialize the database
 
@@ -185,4 +195,4 @@ The scoreboards show the submitted scores from the PostgreSQL database.
 
 ## AI declaration
 
-We used AI during our development of our project. It was used for the CSS part of the project to make sure that the project looked good. It was also used as a helping hand on how to run the program using bash. 
+We used AI during our development of our project. It was used for the CSS part of the project to make sure that the project looked good. It was also used as a helping hand on how to run the program using the Powershell/Terminal commands. 
